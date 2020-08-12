@@ -47,7 +47,7 @@ class DonationController extends Controller
         $this->validateRequest($request);
         Donation::create($request->all());
 
-        return redirect('donations');
+        return redirect('donations.unread');
     }
 
     /**
@@ -57,9 +57,7 @@ class DonationController extends Controller
      */
     public function unread()
     {
-        $donates = Donation::where('read', 0)
-                            ->where('created_at', '<=', Carbon::now()->subMinutes(1)->toDateTimeString())
-                            ->get();
+        $donates = Donation::where('read', 0)->get();
         
 
         return view('donation.unread')->with('donates', $donates);
@@ -96,7 +94,7 @@ class DonationController extends Controller
         $this->validateRequest($request);
         $donation->update($request->all());
 
-        return redirect('donations');
+        return redirect('donations.unread');
     }
 
     /**
@@ -111,7 +109,8 @@ class DonationController extends Controller
             return redirect()->back()->withErrors(['can not update this record because it is read']);
         }
         $donation->delete();
-        return response()->json(['status' => true, 'message' => 'Amount deleted successfully!!']);
+
+        return redirect('donations.unread');
 
     }
 
